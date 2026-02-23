@@ -1,6 +1,7 @@
 import os
-import tweepy
 import random
+import tweepy
+import time
 
 THOUGHTS = [
     "price moved, but onchain activity stayed flat.",
@@ -8,22 +9,24 @@ THOUGHTS = [
     "short-term wallets are active. long-term holders are not.",
     "transaction count rose, average size did not.",
     "activity looks fragmented, not coordinated.",
-    "recent moves are dominated by small transfers."
 ]
 
 def think():
     return random.choice(THOUGHTS)
 
-auth = tweepy.OAuth1UserHandler(
-    os.getenv("X_API_KEY"),
-    os.getenv("X_API_SECRET"),
-    os.getenv("X_ACCESS_TOKEN"),
-    os.getenv("X_ACCESS_SECRET")
-)
+def main():
+    client = tweepy.Client(
+        consumer_key=os.getenv("X_API_KEY"),
+        consumer_secret=os.getenv("X_API_SECRET"),
+        client_id=os.getenv("X_CLIENT_ID"),
+        client_secret=os.getenv("X_CLIENT_SECRET"),
+    )
 
-x_api = tweepy.API(auth)
+    tweet = think()
+    client.create_tweet(text=tweet)
+    print("posted:", tweet)
 
 if __name__ == "__main__":
-    tweet = think()
-    x_api.update_status(tweet)
-    print("posted:", tweet)
+    main()
+    # keep container alive so Railway doesn't instantly crash
+    time.sleep(60)
