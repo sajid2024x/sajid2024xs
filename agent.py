@@ -8,7 +8,7 @@ THOUGHTS = [
     "volume increased without a matching rise in active wallets.",
     "short-term wallets are active. long-term holders are not.",
     "transaction count rose, average size did not.",
-    "activity looks fragmented, not coordinated.",
+    "activity looks fragmented, not coordinated."
 ]
 
 def think():
@@ -23,10 +23,11 @@ def main():
     )
 
     api = tweepy.API(auth)
+
     tweet = think()
     api.update_status(tweet)
     print("posted:", tweet)
 
 if __name__ == "__main__":
     main()
-    time.sleep(60)
+    time.sleep(60)  # keep container alive
