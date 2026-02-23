@@ -30,4 +30,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    time.sleep(60)  # keep container alive
+    time.sleep(60)  # keep container alive briefly
