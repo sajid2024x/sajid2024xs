@@ -15,18 +15,18 @@ def think():
     return random.choice(THOUGHTS)
 
 def main():
-    client = tweepy.Client(
-        consumer_key=os.getenv("X_API_KEY"),
-        consumer_secret=os.getenv("X_API_SECRET"),
-        client_id=os.getenv("X_CLIENT_ID"),
-        client_secret=os.getenv("X_CLIENT_SECRET"),
+    auth = tweepy.OAuth1UserHandler(
+        os.getenv("X_API_KEY"),
+        os.getenv("X_API_SECRET"),
+        os.getenv("X_ACCESS_TOKEN"),
+        os.getenv("X_ACCESS_SECRET"),
     )
 
+    api = tweepy.API(auth)
     tweet = think()
-    client.create_tweet(text=tweet)
+    api.update_status(tweet)
     print("posted:", tweet)
 
 if __name__ == "__main__":
     main()
-    # keep container alive so Railway doesn't instantly crash
     time.sleep(60)
