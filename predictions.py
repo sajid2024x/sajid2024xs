@@ -4,19 +4,14 @@ PREDICTION_HOURS = 48
 
 
 def generate_prediction(signal):
-    """
-    Takes ONE signal dict and returns prediction tweet text
-    """
-
     keyword = signal["keyword"]
 
-    tweet = f"""🏟️ Prediction Arena
+    tweet = (
+        "🏟️ Prediction Arena\n\n"
+        f"Narrative Detected: \"{keyword}\"\n\n"
+        "Question:\n"
+        f"Will this narrative escalate within {PREDICTION_HOURS}h?\n\n"
+        "Reply YES / NO"
+    )
 
-Narrative Detected: "{keyword}"
-
-Question:
-Will this narrative escalate within {PREDICTION_HOURS}h?
-
-Reply YES / NO
-"""
     return tweet
