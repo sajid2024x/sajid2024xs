@@ -6,10 +6,10 @@ import tweepy
 
 from collector import collect_posts
 from signals import detect_signals
+from predictions import generate_prediction
 
 
 def main():
-    # connect to X
     client = tweepy.Client(
         bearer_token=os.getenv("X_BEARER_TOKEN"),
         consumer_key=os.getenv("X_API_KEY"),
@@ -18,13 +18,11 @@ def main():
         access_token_secret=os.getenv("X_ACCESS_SECRET"),
     )
 
-    # collect posts
     posts = collect_posts()
     if not posts:
         print("no posts collected.")
         return
 
-    # detect signals
     signals = detect_signals(posts)
     if not signals:
         print("no signal detected.")
@@ -36,22 +34,14 @@ def main():
     else:
         s = signals
 
-    # build neutral signal tweet
-    tweet = (
-        "Signal detected\n\n"
-        f"Narrative: {s['keyword']}\n"
-        f"Mentions: {s['count']} accounts\n"
-        "Window: 20 minutes\n"
-        f"Accounts: {', '.join(s['accounts'])}"
-    )
+    prediction_tweet = generate_prediction(s)
 
-    # post to X
-    client.create_tweet(text=tweet)
-    print("posted signal:")
-    print(tweet)
+    client.create_tweet(text=prediction_tweet)
+    print("posted prediction:")
+    print(prediction_tweet)
 
 
 if __name__ == "__main__":
     while True:
         main()
-        time.sleep(600)  # run every 10 minutes
+        time.sleep(100)
