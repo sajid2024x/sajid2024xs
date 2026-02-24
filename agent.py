@@ -1,7 +1,6 @@
 import os
 import random
 import tweepy
-import time
 
 THOUGHTS = [
     "price moved, but onchain activity stayed flat.",
@@ -15,19 +14,16 @@ def think():
     return random.choice(THOUGHTS)
 
 def main():
-    auth = tweepy.OAuth1UserHandler(
-        os.getenv("X_API_KEY"),
-        os.getenv("X_API_SECRET"),
-        os.getenv("X_ACCESS_TOKEN"),
-        os.getenv("X_ACCESS_SECRET"),
+    client = tweepy.Client(
+        consumer_key=os.getenv("X_API_KEY"),
+        consumer_secret=os.getenv("X_API_SECRET"),
+        access_token=os.getenv("X_ACCESS_TOKEN"),
+        access_token_secret=os.getenv("X_ACCESS_SECRET"),
     )
 
-    api = tweepy.API(auth)
-
     tweet = think()
-    api.update_status(tweet)
+    client.create_tweet(text=tweet)
     print("posted:", tweet)
 
 if __name__ == "__main__":
     main()
-    time.sleep(60)  # keep container alive briefly
