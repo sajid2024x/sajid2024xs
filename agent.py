@@ -2,50 +2,107 @@
 
 import os
 import time
+import json
+import hashlib
 import tweepy
 
 from collector import collect_posts
 from signals import detect_signals
-from predictions import generate_prediction
-from storage import store_prediction
-from predictions import PREDICTION_HOURS
+from interpretations import interpret_signal
+from reporter import generate_report
 
+STATE_FILE = "state.json"
+SLEEP_SECONDS = 180  # 3 minutes
+
+
+# ---------- STATE HELPERS ----------
+
+def load_state():
+    if not os.path.exists(STATE_FILE):
+        return {
+            "active_prediction_id": None,
+            "last_signal_hash": None
+        }
+    with open(STATE_FILE, "r") as f:
+        return json.load(f)
+
+
+def save_state(state):
+    with open(STATE_FILE, "w") as f:
+        json.dump(state, f)
+
+
+# ---------- MAIN LOOP ----------
 
 def main():
     client = tweepy.Client(
-        bearer_token=os.getenv("X_BEARER_TOKEN"),
         consumer_key=os.getenv("X_API_KEY"),
         consumer_secret=os.getenv("X_API_SECRET"),
         access_token=os.getenv("X_ACCESS_TOKEN"),
         access_token_secret=os.getenv("X_ACCESS_SECRET"),
+        bearer_token=os.getenv("X_BEARER_TOKEN"),
+        wait_on_rate_limit=True
     )
 
+    state = load_state()
+
+    # 1️⃣ collect posts
     posts = collect_posts()
     if not posts:
-        print("no posts collected.")
+        print("no posts collected. staying silent.")
         return
 
+    # 2️⃣ detect signals
     signals = detect_signals(posts)
     if not signals:
-        print("no signal detected.")
+        print("no signals detected.")
         return
 
-    # support dict or list signals
-    if isinstance(signals, list):
-        s = signals[0]
-    else:
-        s = signals
+    # use the strongest / first signal
+    signal = signals[0]
 
-    prediction_tweet = generate_prediction(s)
+    # 3️⃣ prevent duplicate predictions
+    signal_hash = hashlib.sha256(str(signal).encode()).hexdigest()
 
-    client.create_tweet(text=prediction_tweet)
-    print("posted prediction:")
-    print(prediction_tweet)
-    store_prediction(s, PREDICTION_HOURS)
-print("prediction stored for resolution")
+    if state["last_signal_hash"] == signal_hash:
+        print("signal already processed. skipping.")
+        return
 
+    if state["active_prediction_id"] is not None:
+        print("prediction already active. waiting for resolution.")
+        return
+
+    # 4️⃣ interpret signal
+    interpretation = interpret_signal(signal)
+    if not interpretation:
+        print("signal not strong enough to interpret.")
+        return
+
+    # 5️⃣ generate prediction tweet
+    prediction_tweet = generate_report(interpretation)
+    if not prediction_tweet:
+        print("empty prediction text. aborting.")
+        return
+
+    # 6️⃣ post prediction
+    response = client.create_tweet(text=prediction_tweet)
+    prediction_id = response.data["id"]
+
+    # 7️⃣ save state
+    state["active_prediction_id"] = prediction_id
+    state["last_signal_hash"] = signal_hash
+    save_state(state)
+
+    print("prediction stored for resolution:", prediction_id)
+
+
+# ---------- RUN FOREVER ----------
 
 if __name__ == "__main__":
     while True:
-        main()
-        time.sleep(100)
+        try:
+            main()
+        except Exception as e:
+            print("error:", e)
+
+        time.sleep(SLEEP_SECONDS)
