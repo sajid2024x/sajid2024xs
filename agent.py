@@ -12,10 +12,8 @@ from interpretations import interpret_signal
 from reporter import generate_report
 
 STATE_FILE = "state.json"
-SLEEP_SECONDS = 180  # 3 minutes
+SLEEP_SECONDS = 300  # 5 minutes
 
-
-# ---------- STATE HELPERS ----------
 
 def load_state():
     if not os.path.exists(STATE_FILE):
@@ -31,8 +29,6 @@ def save_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f)
 
-
-# ---------- MAIN LOOP ----------
 
 def main():
     client = tweepy.Client(
@@ -53,15 +49,11 @@ def main():
         return
 
     # 2️⃣ detect signals
-signals = detect_signals(posts)
+    signals = detect_signals(posts)
+    if not signals or not isinstance(signals, list):
+        print("no valid signals detected.")
+        return
 
-if not signals or not isinstance(signals, list):
-    print("no valid signals returned:", signals)
-    return
-
-signal = signals[0]
-
-    # use the strongest / first signal
     signal = signals[0]
 
     # 3️⃣ prevent duplicate predictions
@@ -98,8 +90,6 @@ signal = signals[0]
 
     print("prediction stored for resolution:", prediction_id)
 
-
-# ---------- RUN FOREVER ----------
 
 if __name__ == "__main__":
     while True:
