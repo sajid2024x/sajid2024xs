@@ -22,12 +22,16 @@ def main():
         print("no posts collected.")
         return
 
-    signals = detect_signals(posts)
-    if not signals:
-        print("no signal detected.")
-        return
+   signals = detect_signals(posts)
+if not signals:
+    print("no signal detected.")
+    return
 
+# support both dict or list return types
+if isinstance(signals, list):
     s = signals[0]
+else:
+    s = signals
 
     tweet = (
         f"Signal detected\n\n"
