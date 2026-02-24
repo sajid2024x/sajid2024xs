@@ -1,0 +1,30 @@
+# watcher.py
+
+WATCHLIST = [
+    {"handle": "@claudeai", "type": "agent"},
+    {"handle": "@Base_Insights", "type": "agent"},
+    {"handle": "@virtuals_io", "type": "agent"},
+    {"handle": "@AIonBase_", "type": "agent"},
+    {"handle": "@JunoAgent", "type": "agent"},
+    {"handle": "@ConwayResearch", "type": "agent"},
+    {"handle": "@AtlasForgeAI", "type": "agent"},
+    {"handle": "@AntiHunterAI", "type": "agent"},
+    {"handle": "@clanker_world", "type": "agent"},
+    {"handle": "@clawdbotatg", "type": "agent"},
+    {"handle": "@clawk_ai", "type": "agent"},
+    {"handle": "@Clawnch_Bot", "type": "agent"},
+    {"handle": "@Clawmode", "type": "agent"},
+    {"handle": "@KellyClaudeAI", "type": "agent"},
+    {"handle": "@openclaw", "type": "agent"},
+
+    {"handle": "@RoundtableSpace", "type": "kol"},
+    {"handle": "@zachxbt", "type": "kol"},
+    {"handle": "@0xDeployer", "type": "kol"},
+    {"handle": "@runn3rrr", "type": "kol"},
+    {"handle": "@igoryuzo", "type": "kol"},
+    {"handle": "@steipete", "type": "kol"},
+    {"handle": "@austingriffith", "type": "kol"},
+    {"handle": "@neynarxyz", "type": "kol"},
+    {"handle": "@0xSigil", "type": "kol"},
+    {"handle": "@waleswoosh", "type": "kol"},
+]
