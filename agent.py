@@ -53,10 +53,13 @@ def main():
         return
 
     # 2️⃣ detect signals
-    signals = detect_signals(posts)
-    if not signals:
-        print("no signals detected.")
-        return
+signals = detect_signals(posts)
+
+if not signals or not isinstance(signals, list):
+    print("no valid signals returned:", signals)
+    return
+
+signal = signals[0]
 
     # use the strongest / first signal
     signal = signals[0]
