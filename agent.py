@@ -9,6 +9,7 @@ from signals import detect_signals
 
 
 def main():
+    # connect to X
     client = tweepy.Client(
         bearer_token=os.getenv("X_BEARER_TOKEN"),
         consumer_key=os.getenv("X_API_KEY"),
@@ -17,35 +18,40 @@ def main():
         access_token_secret=os.getenv("X_ACCESS_SECRET"),
     )
 
+    # collect posts
     posts = collect_posts()
     if not posts:
         print("no posts collected.")
         return
 
-   signals = detect_signals(posts)
-if not signals:
-    print("no signal detected.")
-    return
+    # detect signals
+    signals = detect_signals(posts)
+    if not signals:
+        print("no signal detected.")
+        return
 
-# support both dict or list return types
-if isinstance(signals, list):
-    s = signals[0]
-else:
-    s = signals
+    # support dict or list signals
+    if isinstance(signals, list):
+        s = signals[0]
+    else:
+        s = signals
 
+    # build neutral signal tweet
     tweet = (
-        f"Signal detected\n\n"
+        "Signal detected\n\n"
         f"Narrative: {s['keyword']}\n"
         f"Mentions: {s['count']} accounts\n"
-        f"Window: 20 minutes\n"
+        "Window: 20 minutes\n"
         f"Accounts: {', '.join(s['accounts'])}"
     )
 
+    # post to X
     client.create_tweet(text=tweet)
-    print("posted signal:", tweet)
+    print("posted signal:")
+    print(tweet)
 
 
 if __name__ == "__main__":
     while True:
         main()
-        time.sleep(600)  # every 10 minutes
+        time.sleep(600)  # run every 10 minutes
