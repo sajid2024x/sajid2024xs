@@ -7,6 +7,8 @@ import tweepy
 from collector import collect_posts
 from signals import detect_signals
 from predictions import generate_prediction
+from storage import store_prediction
+from predictions import PREDICTION_HOURS
 
 
 def main():
@@ -39,6 +41,8 @@ def main():
     client.create_tweet(text=prediction_tweet)
     print("posted prediction:")
     print(prediction_tweet)
+    store_prediction(s, PREDICTION_HOURS)
+print("prediction stored for resolution")
 
 
 if __name__ == "__main__":
