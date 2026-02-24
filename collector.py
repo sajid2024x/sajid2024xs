@@ -11,7 +11,7 @@ client = tweepy.Client(
     wait_on_rate_limit=True,
 )
 
-def collect_latest():
+def collect_posts():
     collected = []
 
     for item in WATCHLIST:
@@ -42,5 +42,5 @@ def collect_latest():
     return collected
 
 if __name__ == "__main__":
-    data = collect_latest()
+    data = collect_posts()
     print("collected", len(data), "tweets")
